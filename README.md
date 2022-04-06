@@ -1,10 +1,13 @@
-# games101
+# GAMES101
 
 ## 配置本地环境
-### eigen
-#### Install
+### [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page)
+1. Install
+```
 brew install eigen
-<br>
 brew link --overwrite eigen
-#### Include
+```
+2. Include
+```
 include_directories("/usr/local/include")
+```
