@@ -8,7 +8,8 @@ int main() {
     * PA 0
     */
     Eigen::Vector2f p(2, 1);
-    Eigen::Matrix2f rotation = Eigen::Rotation2Df(45.0 / 180 * M_PI).toRotationMatrix();
-    std::cout << rotation * p << std::endl;
+    Eigen::Matrix2f rotation = Eigen::Rotation2Df(45 * M_PI / 180).toRotationMatrix();
+    Eigen::Vector2f move(1, 2);
+    std::cout << rotation * p + move << std::endl;
     return 0;
 }
