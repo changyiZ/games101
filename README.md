@@ -5,7 +5,9 @@
 1. Install
 ```
 brew install eigen
-brew link --overwrite eigen
+# brew link --overwrite eigen
+
+brew install opencv
 ```
 2. Include
 ```
