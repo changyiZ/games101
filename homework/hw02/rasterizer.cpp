@@ -143,7 +143,7 @@ void rst::rasterizer::rasterize_triangle(const Triangle &t) {
                 z_interpolated *= w_reciprocal;
                 auto index = get_index(x, y);
                 // set the current pixel (use the set_pixel function) to the color of the triangle (use getColor function) if it should be painted.
-                if (z_interpolated < depth_buf[index]) {
+                if (z_interpolated > depth_buf[index]) {
                     depth_buf[index] = z_interpolated;
                     frame_buf[index] = t.getColor();
                 }
@@ -169,7 +169,7 @@ void rst::rasterizer::clear(rst::Buffers buff) {
         std::fill(frame_buf.begin(), frame_buf.end(), Eigen::Vector3f{0, 0, 0});
     }
     if ((buff & rst::Buffers::Depth) == rst::Buffers::Depth) {
-        std::fill(depth_buf.begin(), depth_buf.end(), std::numeric_limits<float>::infinity());
+        std::fill(depth_buf.begin(), depth_buf.end(), std::numeric_limits<float>::lowest());
     }
 }
 
