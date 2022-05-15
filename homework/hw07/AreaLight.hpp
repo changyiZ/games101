@@ -13,6 +13,7 @@ public:
     AreaLight(const Vector3f &p, const Vector3f &i) : Light(p, i) {
         // 法线竖直向下
         normal = Vector3f(0, -1, 0);
+        // u,v 用于在 x, z 方向随机采样
         u = Vector3f(1, 0, 0);
         v = Vector3f(0, 0, 1);
         length = 100;

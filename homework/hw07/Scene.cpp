@@ -14,6 +14,9 @@ Intersection Scene::intersect(const Ray &ray) const {
     return this->bvh->Intersect(ray);
 }
 
+/**
+ * 采样一个光源的点，并给出 pdf
+ */
 void Scene::sampleLight(Intersection &pos, float &pdf) const {
     float emit_area_sum = 0;
     for (uint32_t k = 0; k < objects.size(); ++k) {
@@ -34,6 +37,7 @@ void Scene::sampleLight(Intersection &pos, float &pdf) const {
     }
 }
 
+// Deprecated!!!
 bool Scene::trace(
         const Ray &ray,
         const std::vector<Object *> &objects,
@@ -56,5 +60,44 @@ bool Scene::trace(
 
 // Implementation of Path Tracing
 Vector3f Scene::castRay(const Ray &ray, int depth) const {
-    // TO DO Implement Path Tracing Algorithm here
+    Intersection intersection = intersect(ray);
+    if (intersection.happened) {
+        if (intersection.m->hasEmission()) {
+            return intersection.m->getEmission();
+        }
+
+        Vector3f lDir = 0, lIndir = 0;
+        Intersection lightPoint;
+        float pdfLight;
+        sampleLight(lightPoint, pdfLight);
+
+        auto material = intersection.m;
+        auto &normal = intersection.normal;
+        auto &hitPoint = intersection.coords;
+        auto toLight = lightPoint.coords - hitPoint;
+        auto toLightDirection = normalize(toLight);
+        auto intersectionLight = intersect(Ray(lightPoint.coords, -toLightDirection));
+        // No block in the middle
+        if (intersection.obj == intersectionLight.obj) {
+            lDir = lightPoint.emit * material->eval(toLightDirection, -ray.direction, normal) *
+                   dotProduct(toLightDirection, normal) *
+                   dotProduct(-toLightDirection, lightPoint.normal) /
+                   dotProduct(toLight, toLight) / pdfLight;
+        }
+
+        if (get_random_float() < RussianRoulette) {
+            auto indirection = material->sample(ray.direction, normal);
+            Ray ray1(hitPoint, indirection);
+            Intersection intersectionNext = intersect(ray1);
+            float pdf = material->pdf(ray.direction, indirection, normal);
+            if (intersectionNext.happened && !intersectionNext.m->hasEmission() && pdf > EPSILON) {
+                lIndir = castRay(ray1, depth) * material->eval(indirection, -ray.direction, normal) *
+                         dotProduct(indirection, normal) / pdf / RussianRoulette;
+            }
+        }
+
+        return lDir + lIndir;
+    }
+
+    return 0;
 }

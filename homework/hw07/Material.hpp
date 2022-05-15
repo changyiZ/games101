@@ -137,7 +137,9 @@ Vector3f Material::getColorAt(double u, double v) {
     return Vector3f();
 }
 
-
+/**
+ * 根据材质（这里仅支持 Diffuse），根据入射方向，随机生成一个出射方向
+ */
 Vector3f Material::sample(const Vector3f &wi, const Vector3f &N) {
     switch (m_type) {
         case DIFFUSE: {
